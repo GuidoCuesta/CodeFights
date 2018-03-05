@@ -1,0 +1,103 @@
+/*
+
+You're given 2 huge integers represented by linked lists. Each linked list element is a number from 0 to 9999 that represents a number with exactly 4 digits. The represented number might have leading zeros. Your task is to add up these huge integers and return the result in the same format.
+
+Example
+
+For a = [9876, 5432, 1999] and b = [1, 8001], the output should be
+addTwoHugeNumbers(a, b) = [9876, 5434, 0].
+
+Explanation: 987654321999 + 18001 = 987654340000.
+
+For a = [123, 4, 5] and b = [100, 100, 100], the output should be
+addTwoHugeNumbers(a, b) = [223, 104, 105].
+
+Explanation: 12300040005 + 10001000100 = 22301040105.
+
+*/
+
+// Definition for singly-linked list:
+// template<typename T>
+// struct ListNode {
+//   ListNode(const T &v) : value(v), next(nullptr) {}
+//   T value;
+//   ListNode *next;
+// };
+//
+ListNode<int> * addTwoHugeNumbers(ListNode<int> * a, ListNode<int> * b) 
+{
+    ListNode<int> *rev_a=0;
+    ListNode<int> *rev_b=0;
+    ListNode<int> *result=new ListNode<int>;
+    ListNode<int> *result_head=result;
+    ListNode<int> *retval=0;    
+    ListNode<int> *aux_next;
+    int carry=0;
+    int aux_value;
+    
+    //reverse a
+    while (a)
+    {
+        aux_next = a->next;
+        a->next = rev_a;
+        rev_a = a;
+        a = aux_next;
+    }
+    //reverse b
+    while (b)
+    {
+        aux_next = b->next;
+        b->next = rev_b;
+        rev_b = b;
+        b = aux_next;
+    }
+    
+    //result=rev_a+rev_b
+    while (rev_a!=nullptr||rev_b!=nullptr||carry!=0) 
+    {
+        if (rev_a!=nullptr&&rev_b!=nullptr)
+        {
+            aux_value = rev_a->value+rev_b->value+carry;
+            rev_a=rev_a->next;
+            rev_b=rev_b->next;
+        }
+        else if(rev_a!=nullptr&&rev_b==nullptr)
+        {
+            aux_value = rev_a->value+carry;
+            rev_a=rev_a->next;            
+        }
+        else if(rev_a==nullptr&&rev_b!=nullptr)
+        {
+            aux_value = rev_b->value+carry;
+            rev_b=rev_b->next;            
+        }
+        else if(rev_a==nullptr&&rev_b==nullptr&&carry!=0)
+            aux_value = carry;
+        
+        if(aux_value>9999)
+        {
+            carry=aux_value/10000;
+            aux_value=aux_value-10000*carry;
+        }
+        else
+            carry=0;
+        
+        result->value=aux_value;
+        if(rev_a!=nullptr||rev_b!=nullptr||carry!=0)
+        {
+            result->next=new ListNode<int>;
+            result=result->next;
+        }
+    }
+    //reverse result
+    while (result)
+    {
+        aux_next = result->next;
+        result->next = retval;
+        retval = result;
+        result = aux_next;
+    } 
+   
+    return retval;
+    
+}
